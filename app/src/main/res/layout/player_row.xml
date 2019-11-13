@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playerRow"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    tools:context=".activity.LeadersActivity">
+
+    <ImageView android:layout_width="35dp"
+        android:id="@+id/playerAvatar"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentStart="true"
+        tools:src="@mipmap/ic_first_avatar"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView android:layout_width="wrap_content"
+        android:id="@+id/playerName"
+        android:layout_toEndOf="@id/playerAvatar"
+        android:layout_toStartOf="@id/playerScore"
+        android:layout_marginStart="15dp"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textSize="18sp"
+        android:textColor="@color/blackText"
+        android:ellipsize="marquee"
+        tools:text="name"/>
+
+    <TextView
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:id="@+id/playerScore"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_width="wrap_content"
+        tools:text="points"
+        android:textSize="16sp"
+        android:textColor="@color/colorAccent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

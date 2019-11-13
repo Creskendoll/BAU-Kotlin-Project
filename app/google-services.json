@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "656354087648",
+    "firebase_url": "https://bau-kotlin-app.firebaseio.com",
+    "project_id": "bau-kotlin-app",
+    "storage_bucket": "bau-kotlin-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656354087648:android:3d86d669bac05b28c2f685",
+        "android_client_info": {
+          "package_name": "com.kenansoylu.bauproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656354087648-lkuo02950dp9n99sbcc82838mqpqciif.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFzHcu3QnXUSPU6axQQjz0VVKFZn9Fq98"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656354087648-lkuo02950dp9n99sbcc82838mqpqciif.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
