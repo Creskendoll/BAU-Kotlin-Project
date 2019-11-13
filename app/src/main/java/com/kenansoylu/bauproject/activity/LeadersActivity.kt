@@ -1,5 +1,6 @@
 package com.kenansoylu.bauproject.activity
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -16,20 +17,25 @@ class LeadersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leaders)
 
-        val db = FirebaseFirestore.getInstance()
-        val mlayoutManager = LinearLayoutManager(this)
-
-        with(leadersList) {
-            layoutManager = mlayoutManager
-            adapter = LeadersAdapter(getPlayers(db), this@LeadersActivity)
-        }
+        getPlayers()
     }
 
-    private fun getPlayers(db: FirebaseFirestore): MutableList<PlayerData> {
+    private fun getPlayers(): List<PlayerData> {
+
+        val db = FirebaseFirestore.getInstance()
+        val mLayoutManager = LinearLayoutManager(this)
+
         db.collection("players").get().addOnSuccessListener { result ->
-            for (document in result) {
-                Log.d("LEADERS", "${document.id} => ${document.data}")
+            val players = result.map { PlayerData(it.id, it.data["name"] as String, it.data["avatar"] as String, it.data["scores"] as List<Int>) }
+
+            with(leadersList) {
+                layoutManager = mLayoutManager
+                adapter = LeadersAdapter(players, this@LeadersActivity)
             }
+
+//            for (document in result) {
+//                Log.d("LEADERS", "${document.id} => ${document.data}")
+//            }
         }.addOnFailureListener {exception ->
             Log.w("LEADERS", "Can't get players.", exception)
         }

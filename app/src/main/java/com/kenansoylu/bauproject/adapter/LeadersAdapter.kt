@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.data.PlayerData
+import com.kenansoylu.bauproject.misc.DisplayImage
 import kotlinx.android.synthetic.main.player_row.view.*
 
 class LeadersAdapter(
-    val leaders: MutableList<PlayerData>,
+    val leaders: List<PlayerData>,
     val context: Context
 ) : RecyclerView.Adapter<LeadersAdapter.LeadersViewHolder>() {
 
@@ -23,8 +24,8 @@ class LeadersAdapter(
     override fun onBindViewHolder(holder: LeadersViewHolder, position: Int) {
         with(leaders[position]) {
             holder.nameTV.text = name
-            holder.scoreTV.text = score.toString()
-            holder.avatarIV.setImageURI(avatarURI)
+            holder.scoreTV.text = scores.max().toString()
+            DisplayImage(holder.avatarIV).execute(avatarURI)
         }
     }
 
