@@ -10,10 +10,17 @@ import com.kenansoylu.bauproject.data.PlayerData
 import com.kenansoylu.bauproject.misc.DisplayImage
 import kotlinx.android.synthetic.main.player_row.view.*
 
+
+class LeadersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val avatarIV = view.playerAvatar
+    val nameTV = view.playerName
+    val scoreTV = view.playerScore
+}
+
 class LeadersAdapter(
     val leaders: List<PlayerData>,
     val context: Context
-) : RecyclerView.Adapter<LeadersAdapter.LeadersViewHolder>() {
+) : RecyclerView.Adapter<LeadersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadersViewHolder {
         return LeadersViewHolder(LayoutInflater.from(context).inflate(R.layout.player_row, parent, false))
@@ -29,9 +36,4 @@ class LeadersAdapter(
         }
     }
 
-    class LeadersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val avatarIV = view.playerAvatar
-        val nameTV = view.playerName
-        val scoreTV = view.playerScore
-    }
 }
