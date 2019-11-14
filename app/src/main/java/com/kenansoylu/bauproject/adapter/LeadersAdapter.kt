@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kenansoylu.bauproject.R
-import com.kenansoylu.bauproject.data.PlayerData
+import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.DisplayImage
 import kotlinx.android.synthetic.main.player_row.view.*
 
@@ -18,12 +18,18 @@ class LeadersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 }
 
 class LeadersAdapter(
-    val leaders: List<PlayerData>,
+    val leaders: List<UserData>,
     val context: Context
 ) : RecyclerView.Adapter<LeadersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadersViewHolder {
-        return LeadersViewHolder(LayoutInflater.from(context).inflate(R.layout.player_row, parent, false))
+        return LeadersViewHolder(
+            LayoutInflater.from(context).inflate(
+                R.layout.player_row,
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount() = leaders.size

@@ -2,6 +2,7 @@ package com.kenansoylu.bauproject.misc
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import com.kenansoylu.bauproject.data.UserData
 
 class SharedPreferenceManager(val context: AppCompatActivity) {
 
@@ -16,5 +17,30 @@ class SharedPreferenceManager(val context: AppCompatActivity) {
             putString(key, value)
             commit()
         }
+    }
+
+    fun getUser() : UserData? {
+        val id = getData("id") ?: ""
+        val avatarURI = getData("avatarURI") ?: ""
+        val name = getData("name") ?: ""
+        // TODO: String to int list
+        val scores = listOf<Int>()
+
+        return if (id == "") null
+        else UserData(id, name, avatarURI, scores)
+    }
+
+    fun saveUser(userData : UserData) {
+        saveData("id", userData.id)
+        saveData("avatarURI", userData.avatarURI)
+        saveData("name", userData.name)
+        saveData("scores", userData.scores.toString())
+    }
+
+    fun deleteUser() {
+        saveData("id", "")
+        saveData("avatarURI", "")
+        saveData("name", "")
+        saveData("scores", "")
     }
 }

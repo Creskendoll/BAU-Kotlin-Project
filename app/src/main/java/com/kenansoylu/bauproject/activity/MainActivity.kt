@@ -7,16 +7,24 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
 import com.kenansoylu.bauproject.R
+import com.kenansoylu.bauproject.data.UserData
+import com.kenansoylu.bauproject.misc.DisplayImage
 import com.kenansoylu.bauproject.misc.SharedPreferenceManager
+import com.kenansoylu.bauproject.services.UserService
+import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
+
+    private val userService = UserService()
 
     private val auth = FirebaseAuth.getInstance()
     private val spManager = SharedPreferenceManager(this)
@@ -47,19 +55,33 @@ class MainActivity : AppCompatActivity() {
             signOut()
         }
 
+//        Log.d("USER DATA:", this.spManager.getUser()?.serialize().toString())
+
         initUser(this.auth.currentUser)
     }
 
-    private fun initUser(user: FirebaseUser?) {
-        val userData = this.spManager.getData(LOGIN_KEY)
+    private fun setUserFields(userData: UserData) {
+        findViewById<TextView>(R.id.nickNameTxt).text = userData.name
+        findViewById<TextView>(R.id.scoreTxt).text = userData.scores.firstOrNull()?.toString() ?: ""
+        findViewById<TextView>(R.id.highscoreTxt).text = userData.scores.max()?.toString() ?: ""
+        findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
+        DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
+    }
 
-        // TODO: set a boolean for login add to and check shared preferences
-        if (user != null) {
-            findViewById<TextView>(R.id.nickNameTxt).text = user.displayName
-            findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
+    private fun initUser(user: FirebaseUser?) {
+        val userData = this.spManager.getUser()
+        Log.d("USER DATA:", userData.toString())
+
+        if (userData != null) {
+            setUserFields(userData)
         } else {
             findViewById<Button>(R.id.signOutBtn).visibility = View.GONE
+
+            if (user != null) {
+                userService.getUser(user, ::setUserFields, ::onError)
+            }
         }
+
     }
 
     private fun signOut() {
@@ -68,11 +90,25 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.nickNameTxt).text = ""
             findViewById<TextView>(R.id.highscoreTxt).text = ""
             findViewById<TextView>(R.id.scoreTxt).text = ""
-            Toast.makeText(applicationContext, "Successfully signed out.", Toast.LENGTH_SHORT).show()
+            findViewById<ImageView>(R.id.profileAvatar).setImageResource(R.mipmap.ic_first_avatar)
+            Toast.makeText(applicationContext, "Successfully signed out.", Toast.LENGTH_SHORT)
+                .show()
         }
 
         // Clear login data
-        this.spManager.saveData(LOGIN_KEY, "")
+        this.spManager.deleteUser()
+    }
+
+    private fun onNewUser(userRef: DocumentReference) {
+        userRef.get().addOnSuccessListener {
+            DisplayImage(findViewById(R.id.profileAvatar)).execute(it["avatarURI"] as String)
+            findViewById<TextView>(R.id.highscoreTxt).text = "0"
+            findViewById<TextView>(R.id.scoreTxt).text = "0"
+        }
+    }
+
+    private fun onError(e: Exception) {
+        Log.e("ERROR", e.localizedMessage)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -81,19 +117,40 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 1) {
             val response = IdpResponse.fromResultIntent(data)
 
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
 
+            if (resultCode == Activity.RESULT_OK) {
                 // Might have to get a new instance
 //                val user = FirebaseAuth.getInstance().currentUser
                 val user = this.auth.currentUser
+                val defaultPic =
+                    "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.commondreams.org%2Fsites%2Fdefault%2Ffiles%2Fimce-images%2Fmad_dog.jpg&f=1&nofb=1"
+                val defaultName = "Guest"
+                val userData = UserData(
+                    user?.uid ?: "-1",
+                    user?.displayName ?: defaultName,
+                    defaultPic,
+                    listOf(0)
+                )
+
+                // Will not run if response is null
+                if (response?.isNewUser == true) {
+                    userService.addUser(userData, ::onNewUser, ::onError)
+                    Toast.makeText(
+                        applicationContext,
+                        "Successfully created user.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Successfully signed in.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                spManager.saveUser(userData)
 
                 initUser(user)
-
-                val userData = user!!.uid
-                Log.d("USER DATA:", userData)
-
-                this.spManager.saveData(LOGIN_KEY, userData)
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check

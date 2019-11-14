@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.LeadersAdapter
-import com.kenansoylu.bauproject.data.PlayerData
+import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.services.UserService
 import kotlinx.android.synthetic.main.activity_leaders.*
 import java.lang.Exception
@@ -22,11 +22,11 @@ class LeadersActivity : AppCompatActivity() {
         this.userService.getAllUsers(::populateList, ::onError)
     }
 
-    private fun populateList(players: List<PlayerData>) {
+    private fun populateList(users: List<UserData>) {
         val mLayoutManager = LinearLayoutManager(this)
         with(leadersList) {
             layoutManager = mLayoutManager
-            adapter = LeadersAdapter(players, this@LeadersActivity)
+            adapter = LeadersAdapter(users, this@LeadersActivity)
         }
     }
 
