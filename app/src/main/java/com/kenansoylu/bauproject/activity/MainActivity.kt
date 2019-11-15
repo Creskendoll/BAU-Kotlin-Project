@@ -20,7 +20,6 @@ import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.DisplayImage
 import com.kenansoylu.bauproject.misc.SharedPreferenceManager
 import com.kenansoylu.bauproject.services.UserService
-import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,8 +27,6 @@ class MainActivity : AppCompatActivity() {
 
     private val auth = FirebaseAuth.getInstance()
     private val spManager = SharedPreferenceManager(this)
-
-    private val LOGIN_KEY = "loggedIn"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +52,10 @@ class MainActivity : AppCompatActivity() {
             signOut()
         }
 
+        findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
+            startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
+        }
+
 //        Log.d("USER DATA:", this.spManager.getUser()?.serialize().toString())
 
         initUser(this.auth.currentUser)
@@ -62,8 +63,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUserFields(userData: UserData) {
         findViewById<TextView>(R.id.nickNameTxt).text = userData.name
-        findViewById<TextView>(R.id.scoreTxt).text = userData.scores.firstOrNull()?.toString() ?: ""
-        findViewById<TextView>(R.id.highscoreTxt).text = userData.scores.max()?.toString() ?: ""
+        findViewById<TextView>(R.id.scoreTxt).text = "Score: " + userData.scores.firstOrNull()?.toString()
+        findViewById<TextView>(R.id.highscoreTxt).text = "High score: " + userData.scores.max()?.toString()
         findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
     }

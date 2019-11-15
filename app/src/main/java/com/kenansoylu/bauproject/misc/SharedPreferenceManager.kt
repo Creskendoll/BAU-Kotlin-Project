@@ -24,7 +24,7 @@ class SharedPreferenceManager(val context: AppCompatActivity) {
         val avatarURI = getData("avatarURI") ?: ""
         val name = getData("name") ?: ""
         // TODO: String to int list
-        val scores = listOf<Int>()
+        val scores = listOf(0)
 
         return if (id == "") null
         else UserData(id, name, avatarURI, scores)
