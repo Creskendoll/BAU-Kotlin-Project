@@ -1,25 +1,31 @@
 package com.kenansoylu.bauproject.services
 
-import android.util.Log
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.kenansoylu.bauproject.activity.MainActivity
 import com.kenansoylu.bauproject.data.UserData
+import com.kenansoylu.bauproject.misc.SharedPreferenceManager
 import java.lang.Exception
+import kotlin.reflect.typeOf
 
-class UserService {
+class UserService(context: Context) {
+    val spManager = SharedPreferenceManager(context)
     val DB_NAME = "players"
     val db = FirebaseFirestore.getInstance()
+    val storage = FirebaseStorage.getInstance()
 
     fun getAllUsers(then: (List<UserData>) -> Unit, catch: (Exception) -> Unit) {
         db.collection(DB_NAME).get().addOnSuccessListener { result ->
             val players = result.map {
-                //                Log.d("RESULT", it.data.entries.toString())
                 UserData(
-                    it.data["id"] as String,
+                    it.id,
                     it.data["name"] as String,
                     it.data["avatarURI"] as String,
-                    it.data["scores"] as List<Int>
+                    it.data["scores"] as List<Long>
                 )
             }
             then(players)
@@ -28,21 +34,32 @@ class UserService {
         }
     }
 
-    fun getUser(user: FirebaseUser, then: (UserData) -> Unit, catch: (Exception) -> Unit) {
-        db.collection(DB_NAME).get().addOnSuccessListener { result ->
-            val docRef = result.first { it["id"] == user.uid }
+    fun getUserByID(userID : String, then: (UserData) -> Unit, catch: (Exception) -> Unit) {
+        db.collection(DB_NAME).document(userID).get().addOnSuccessListener {
             val userData = UserData(
-                docRef["id"] as String,
-                docRef["name"] as String,
-                docRef["avatarURI"] as String,
-                docRef["scores"] as List<Int>
+                userID,
+                it["name"] as String,
+                it["avatarURI"] as String,
+                it["scores"] as List<Long>
             )
+
             then(userData)
         }.addOnFailureListener(catch)
     }
 
-    fun addUser(userData: UserData, then: (DocumentReference) -> Unit, catch: (Exception) -> Unit) {
-        db.collection(DB_NAME).add(userData.serialize()).addOnSuccessListener(then)
+    fun getUser(user: FirebaseUser, then: (UserData) -> Unit, catch: (Exception) -> Unit) {
+        getUserByID(user.uid, then, catch)
+    }
+
+    fun addUser(userData: UserData, then: (Void?) -> Unit, catch: (Exception) -> Unit) {
+        db.collection(DB_NAME).document(userData.id).set(userData.serialize()).addOnSuccessListener(then)
+            .addOnFailureListener(catch)
+    }
+
+    fun updateUser(oldUserData: UserData, newUserData : UserData, then: (Void?) -> Unit, catch: (Exception) -> Unit) {
+        spManager.deleteUser()
+        spManager.saveUser(newUserData)
+        db.collection(DB_NAME).document(oldUserData.id).set(newUserData.serialize()).addOnSuccessListener(then)
             .addOnFailureListener(catch)
     }
 }

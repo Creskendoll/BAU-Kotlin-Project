@@ -23,37 +23,52 @@ import com.kenansoylu.bauproject.services.UserService
 
 class MainActivity : AppCompatActivity() {
 
-    private val userService = UserService()
-
     private val auth = FirebaseAuth.getInstance()
-    private val spManager = SharedPreferenceManager(this)
+
+    private var spManager = SharedPreferenceManager(this)
+    private var userService = UserService(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
+
+        spManager = SharedPreferenceManager(applicationContext)
+        userService = UserService(applicationContext)
+
 
         findViewById<Button>(R.id.leadersBtn).setOnClickListener {
             startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
         }
 
         findViewById<Button>(R.id.playBtn).setOnClickListener {
-            val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build()
-            )
-            // Create and launch sign-in intent
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .build(), 1
-            )
+            if (this.auth.currentUser == null) {
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build()
+                )
+                // Create and launch sign-in intent
+                startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(), 1
+                )
+            } else {
+
+            }
+
         }
         findViewById<Button>(R.id.signOutBtn).setOnClickListener {
             signOut()
         }
 
         findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
-            startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
+            if(this.auth.currentUser != null) {
+                val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
+                profileIntent.putExtra("is_user", true)
+                profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
+                startActivity(profileIntent)
+            }
         }
 
 //        Log.d("USER DATA:", this.spManager.getUser()?.serialize().toString())
@@ -100,16 +115,19 @@ class MainActivity : AppCompatActivity() {
         this.spManager.deleteUser()
     }
 
-    private fun onNewUser(userRef: DocumentReference) {
-        userRef.get().addOnSuccessListener {
-            DisplayImage(findViewById(R.id.profileAvatar)).execute(it["avatarURI"] as String)
-            findViewById<TextView>(R.id.highscoreTxt).text = "0"
-            findViewById<TextView>(R.id.scoreTxt).text = "0"
-        }
+    private fun onNewUser(userData: UserData) {
+        DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
+        findViewById<TextView>(R.id.highscoreTxt).text = "0"
+        findViewById<TextView>(R.id.scoreTxt).text = "0"
     }
 
     private fun onError(e: Exception) {
         Log.e("ERROR", e.localizedMessage)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        initUser(null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -124,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 //                val user = FirebaseAuth.getInstance().currentUser
                 val user = this.auth.currentUser
                 val defaultPic =
-                    "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.commondreams.org%2Fsites%2Fdefault%2Ffiles%2Fimce-images%2Fmad_dog.jpg&f=1&nofb=1"
+                    "https://pbs.twimg.com/profile_images/1002933519629389824/rMED8za4_400x400.jpg"
                 val defaultName = "Guest"
                 val userData = UserData(
                     user?.uid ?: "-1",
@@ -135,7 +153,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Will not run if response is null
                 if (response?.isNewUser == true) {
-                    userService.addUser(userData, ::onNewUser, ::onError)
+                    userService.addUser(userData, { onNewUser(userData) }, ::onError)
                     Toast.makeText(
                         applicationContext,
                         "Successfully created user.",

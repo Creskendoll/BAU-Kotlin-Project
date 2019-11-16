@@ -11,6 +11,7 @@ class DisplayImage(internal var bmImage: ImageView) : AsyncTask<String, Void, Bi
 
     override fun doInBackground(vararg urls: String): Bitmap? {
         val urldisplay = urls[0]
+        bmImage.tag = urldisplay
         var mIcon11: Bitmap? = null
         try {
             val inStream = java.net.URL(urldisplay).openStream()
@@ -23,7 +24,8 @@ class DisplayImage(internal var bmImage: ImageView) : AsyncTask<String, Void, Bi
         return mIcon11
     }
 
-    override fun onPostExecute(result: Bitmap) {
-        bmImage.setImageBitmap(result)
+    override fun onPostExecute(result: Bitmap?) {
+        if(result != null)
+            bmImage.setImageBitmap(result)
     }
 }

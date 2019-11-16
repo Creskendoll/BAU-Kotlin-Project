@@ -4,20 +4,42 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <ImageView android:id="@+id/profileAvatar"
-               android:layout_width="match_parent"
-               android:layout_height="120dp"
-               android:src="@mipmap/ic_first_avatar"
-               android:layout_marginTop="32dp"/>
+    <ImageView
+        android:id="@+id/profileAvatar"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:src="@mipmap/ic_first_avatar"
+        android:layout_marginTop="32dp"/>
 
-    <EditText android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text="NAME"
-              android:layout_marginTop="30dp"
-              android:gravity="center"
-              android:textColor="@color/blackText"
-              android:id="@+id/nickNameTxt"
-              android:textSize="30sp"
+    <TextView
+        android:text="HIGHSCORE"
+        android:gravity="center"
+        android:textColor="@color/blackText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/highscoreTxt"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NAME"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:textColor="@color/blackText"
+        android:id="@+id/nickNameTxt"
+        android:textSize="30sp"
     />
+
+    <Button
+        android:id="@+id/updateBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:height="80dp"
+        android:text="Update"
+        android:visibility="visible" />
 
 </LinearLayout>

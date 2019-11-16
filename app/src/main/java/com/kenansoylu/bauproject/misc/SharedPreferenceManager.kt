@@ -4,15 +4,17 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.kenansoylu.bauproject.data.UserData
 
-class SharedPreferenceManager(val context: AppCompatActivity) {
+class SharedPreferenceManager(val context: Context) {
+
+    val PATH = "preferences"
 
     fun getData(key: String) : String? {
-        val sharedPref = this.context.getPreferences(Context.MODE_PRIVATE)
+        val sharedPref = this.context.getSharedPreferences(PATH, Context.MODE_PRIVATE)
         return sharedPref.getString(key, "")
     }
 
     fun saveData(key: String, value: String) {
-        val sharedPref = this.context.getPreferences(Context.MODE_PRIVATE) ?: return
+        val sharedPref = this.context.getSharedPreferences(PATH, Context.MODE_PRIVATE) ?: return
         with(sharedPref.edit()) {
             putString(key, value)
             commit()
@@ -24,7 +26,7 @@ class SharedPreferenceManager(val context: AppCompatActivity) {
         val avatarURI = getData("avatarURI") ?: ""
         val name = getData("name") ?: ""
         // TODO: String to int list
-        val scores = listOf(0)
+        val scores = listOf(0L)
 
         return if (id == "") null
         else UserData(id, name, avatarURI, scores)
