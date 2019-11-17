@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
-            if(this.auth.currentUser != null) {
+            if (this.auth.currentUser != null) {
                 val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
                 profileIntent.putExtra("is_user", true)
                 profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
@@ -78,8 +78,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUserFields(userData: UserData) {
         findViewById<TextView>(R.id.nickNameTxt).text = userData.name
-        findViewById<TextView>(R.id.scoreTxt).text = "Score: " + userData.scores.firstOrNull()?.toString()
-        findViewById<TextView>(R.id.highscoreTxt).text = "High score: " + userData.scores.max()?.toString()
+        findViewById<TextView>(R.id.scoreTxt).text =
+            "Score: " + userData.scores.firstOrNull()?.toString()
+        findViewById<TextView>(R.id.highscoreTxt).text =
+            "High score: " + userData.scores.max()?.toString()
         findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
     }

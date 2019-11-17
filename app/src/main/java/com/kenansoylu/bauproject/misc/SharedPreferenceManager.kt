@@ -8,7 +8,7 @@ class SharedPreferenceManager(val context: Context) {
 
     val PATH = "preferences"
 
-    fun getData(key: String) : String? {
+    fun getData(key: String): String? {
         val sharedPref = this.context.getSharedPreferences(PATH, Context.MODE_PRIVATE)
         return sharedPref.getString(key, "")
     }
@@ -21,7 +21,7 @@ class SharedPreferenceManager(val context: Context) {
         }
     }
 
-    fun getUser() : UserData? {
+    fun getUser(): UserData? {
         val id = getData("id") ?: ""
         val avatarURI = getData("avatarURI") ?: ""
         val name = getData("name") ?: ""
@@ -32,7 +32,7 @@ class SharedPreferenceManager(val context: Context) {
         else UserData(id, name, avatarURI, scores)
     }
 
-    fun saveUser(userData : UserData) {
+    fun saveUser(userData: UserData) {
         saveData("id", userData.id)
         saveData("avatarURI", userData.avatarURI)
         saveData("name", userData.name)

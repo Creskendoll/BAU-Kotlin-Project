@@ -1,22 +1,16 @@
 package com.kenansoylu.bauproject.services
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.kenansoylu.bauproject.activity.MainActivity
 import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.SharedPreferenceManager
 import java.lang.Exception
-import kotlin.reflect.typeOf
 
 class UserService(context: Context) {
     val spManager = SharedPreferenceManager(context)
     val DB_NAME = "players"
     val db = FirebaseFirestore.getInstance()
-    val storage = FirebaseStorage.getInstance()
 
     fun getAllUsers(then: (List<UserData>) -> Unit, catch: (Exception) -> Unit) {
         db.collection(DB_NAME).get().addOnSuccessListener { result ->
@@ -34,7 +28,7 @@ class UserService(context: Context) {
         }
     }
 
-    fun getUserByID(userID : String, then: (UserData) -> Unit, catch: (Exception) -> Unit) {
+    fun getUserByID(userID: String, then: (UserData) -> Unit, catch: (Exception) -> Unit) {
         db.collection(DB_NAME).document(userID).get().addOnSuccessListener {
             val userData = UserData(
                 userID,
@@ -52,14 +46,21 @@ class UserService(context: Context) {
     }
 
     fun addUser(userData: UserData, then: (Void?) -> Unit, catch: (Exception) -> Unit) {
-        db.collection(DB_NAME).document(userData.id).set(userData.serialize()).addOnSuccessListener(then)
+        db.collection(DB_NAME).document(userData.id).set(userData.serialize())
+            .addOnSuccessListener(then)
             .addOnFailureListener(catch)
     }
 
-    fun updateUser(oldUserData: UserData, newUserData : UserData, then: (Void?) -> Unit, catch: (Exception) -> Unit) {
+    fun updateUser(
+        oldUserData: UserData,
+        newUserData: UserData,
+        then: (Void?) -> Unit,
+        catch: (Exception) -> Unit
+    ) {
         spManager.deleteUser()
         spManager.saveUser(newUserData)
-        db.collection(DB_NAME).document(oldUserData.id).set(newUserData.serialize()).addOnSuccessListener(then)
+        db.collection(DB_NAME).document(oldUserData.id).set(newUserData.serialize())
+            .addOnSuccessListener(then)
             .addOnFailureListener(catch)
     }
 }

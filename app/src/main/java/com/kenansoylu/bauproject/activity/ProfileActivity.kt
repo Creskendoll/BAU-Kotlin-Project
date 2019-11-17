@@ -26,7 +26,7 @@ class ProfileActivity : AppCompatActivity() {
         val playerID = intent.getStringExtra("player_id")
 
         findViewById<EditText>(R.id.nickNameTxt).isEnabled = isUser
-        findViewById<Button>(R.id.updateBtn).visibility = if(isUser) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.updateBtn).visibility = if (isUser) View.VISIBLE else View.GONE
 
         populateScreen(playerID)
     }
@@ -35,24 +35,33 @@ class ProfileActivity : AppCompatActivity() {
         val nameEditTxt = findViewById<EditText>(R.id.nickNameTxt)
 
         val highScoreStr = userData.scores.max().toString()
-        findViewById<TextView>(R.id.highscoreTxt).text = "${getString(R.string.high_score)} : ${highScoreStr}"
+        findViewById<TextView>(R.id.highscoreTxt).text =
+            "${getString(R.string.high_score)} : ${highScoreStr}"
         nameEditTxt.text = Editable.Factory.getInstance().newEditable(userData.name)
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
 
         findViewById<Button>(R.id.updateBtn).setOnClickListener {
-            val newUser = UserData(userData.id, nameEditTxt.text.toString(), userData.avatarURI, userData.scores)
+            val newUser = UserData(
+                userData.id,
+                nameEditTxt.text.toString(),
+                userData.avatarURI,
+                userData.scores
+            )
             userService.updateUser(userData, newUser, {
-                Toast.makeText(applicationContext, "Successfully updated user.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Successfully updated user.", Toast.LENGTH_SHORT)
+                    .show()
             }, {
-                Toast.makeText(applicationContext, "Failed to update user!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Failed to update user!", Toast.LENGTH_SHORT)
+                    .show()
             })
         }
     }
+
     private fun onError(e: Exception) {
         Log.e("PROFILE", e.toString())
     }
 
-    private fun populateScreen(playerID : String) {
+    private fun populateScreen(playerID: String) {
         userService.getUserByID(playerID, ::onGetUser, ::onError)
     }
 

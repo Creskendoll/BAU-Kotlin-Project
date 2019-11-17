@@ -25,7 +25,7 @@ class DisplayImage(internal var bmImage: ImageView) : AsyncTask<String, Void, Bi
     }
 
     override fun onPostExecute(result: Bitmap?) {
-        if(result != null)
+        if (result != null)
             bmImage.setImageBitmap(result)
     }
 }

@@ -25,7 +25,7 @@ class LeadersActivity : AppCompatActivity() {
         this.userService.getAllUsers(::populateList, ::onError)
     }
 
-    private fun onLeaderClick(userData : UserData) {
+    private fun onLeaderClick(userData: UserData) {
         val profileIntent = Intent(this@LeadersActivity, ProfileActivity::class.java)
         profileIntent.putExtra("is_user", false)
         profileIntent.putExtra("player_id", userData.id)
