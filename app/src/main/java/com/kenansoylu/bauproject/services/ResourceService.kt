@@ -1,7 +1,6 @@
 package com.kenansoylu.bauproject.services
 
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
 import java.lang.Exception
 
 class ResourceService {
@@ -10,14 +9,12 @@ class ResourceService {
     fun writeData(
         path: String,
         data: ByteArray,
-        caption: String? = "",
         then: (String) -> Unit,
         catch: (Exception?) -> Unit
     ) {
         val ref = storage.getReference(path)
-        val meta = StorageMetadata.Builder().setCustomMetadata("caption", caption).build()
         // TODO : Add progress
-        val uploadTask = ref.putBytes(data, meta)
+        val uploadTask = ref.putBytes(data)
 
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {

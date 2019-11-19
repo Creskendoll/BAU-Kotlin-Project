@@ -14,7 +14,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.DisplayImage
@@ -25,8 +24,10 @@ class MainActivity : AppCompatActivity() {
 
     private val auth = FirebaseAuth.getInstance()
 
-    private var spManager = SharedPreferenceManager(this)
-    private var userService = UserService(this)
+    private val LOGIN_CODE = 1
+
+    private lateinit var spManager: SharedPreferenceManager
+    private lateinit var userService: UserService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +39,20 @@ class MainActivity : AppCompatActivity() {
 
 
         findViewById<Button>(R.id.leadersBtn).setOnClickListener {
-            startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
+            if (this.auth.currentUser == null) {
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build()
+                )
+                // Create and launch sign-in intent
+                startActivityForResult(
+                    AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(), LOGIN_CODE
+                )
+            } else {
+                startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
+            }
         }
 
         findViewById<Button>(R.id.playBtn).setOnClickListener {
@@ -51,12 +65,12 @@ class MainActivity : AppCompatActivity() {
                     AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
-                        .build(), 1
+                        .build(), LOGIN_CODE
                 )
             } else {
-
+                val gameIntent = Intent(this@MainActivity, GameActivity::class.java)
+                startActivity(gameIntent)
             }
-
         }
         findViewById<Button>(R.id.signOutBtn).setOnClickListener {
             signOut()
@@ -65,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
             if (this.auth.currentUser != null) {
                 val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
-                profileIntent.putExtra("is_user", true)
                 profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
                 startActivity(profileIntent)
             }
@@ -135,7 +148,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1) {
+        if (requestCode == LOGIN_CODE) {
             val response = IdpResponse.fromResultIntent(data)
 
 

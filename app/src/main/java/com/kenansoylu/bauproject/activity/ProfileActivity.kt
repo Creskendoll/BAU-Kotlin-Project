@@ -1,37 +1,59 @@
 package com.kenansoylu.bauproject.activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.DisplayImage
+import com.kenansoylu.bauproject.misc.SharedPreferenceManager
 import com.kenansoylu.bauproject.services.UserService
 
 class ProfileActivity : AppCompatActivity() {
 
-    private var userService = UserService(this)
+    private lateinit var userService: UserService
+    private lateinit var spManager: SharedPreferenceManager
+    private lateinit var playerID: String
+    private lateinit var userID: String
+    private val AVATAR_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         userService = UserService(applicationContext)
+        spManager = SharedPreferenceManager(applicationContext)
 
         setContentView(R.layout.activity_profile)
 
-        val isUser = intent.getBooleanExtra("is_user", false)
-        val playerID = intent.getStringExtra("player_id")
+        userID = FirebaseAuth.getInstance().currentUser!!.uid
+        playerID = intent.getStringExtra("player_id")
 
-        findViewById<EditText>(R.id.nickNameTxt).isEnabled = isUser
-        findViewById<Button>(R.id.updateBtn).visibility = if (isUser) View.VISIBLE else View.GONE
+        // Initially hide button
+        findViewById<Button>(R.id.updateBtn).visibility = View.GONE
+
+        findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
+            if (userID == playerID) {
+                val avatarsIntent = Intent(this@ProfileActivity, ChangeAvatarActivity::class.java)
+                startActivityForResult(avatarsIntent, AVATAR_REQUEST)
+            }
+        }
 
         populateScreen(playerID)
     }
 
     private fun onGetUser(userData: UserData) {
+        val isUser = playerID == userID
+
+        findViewById<EditText>(R.id.nickNameTxt).isEnabled = isUser
+        findViewById<Button>(R.id.updateBtn).visibility = if (isUser) View.VISIBLE else View.GONE
+
         val nameEditTxt = findViewById<EditText>(R.id.nickNameTxt)
 
         val highScoreStr = userData.scores.max().toString()
@@ -50,6 +72,11 @@ class ProfileActivity : AppCompatActivity() {
             userService.updateUser(userData, newUser, {
                 Toast.makeText(applicationContext, "Successfully updated user.", Toast.LENGTH_SHORT)
                     .show()
+
+                // Hide keyboard
+                val imm =
+                    applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(nameEditTxt.windowToken, 0)
             }, {
                 Toast.makeText(applicationContext, "Failed to update user!", Toast.LENGTH_SHORT)
                     .show()
@@ -63,6 +90,34 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun populateScreen(playerID: String) {
         userService.getUserByID(playerID, ::onGetUser, ::onError)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == AVATAR_REQUEST && resultCode == RESULT_OK) {
+            val newAvatar = data?.getStringExtra("avatar_url")
+            val curUser = spManager.getUser()
+            newAvatar?.let {
+                curUser?.let {
+                    val newUser = UserData(
+                        it.id,
+                        it.name,
+                        newAvatar,
+                        it.scores
+                    )
+                    spManager.saveUser(newUser)
+                    userService.updateUser(
+                        curUser,
+                        newUser,
+                        { Log.d("PROFILE", "Updated avatar") },
+                        { Log.e("PROFILE", "can't update avatar") })
+
+                    DisplayImage(findViewById(R.id.profileAvatar)).execute(newAvatar)
+                }
+            }
+        }
+
     }
 
 }

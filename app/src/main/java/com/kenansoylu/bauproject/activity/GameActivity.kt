@@ -5,17 +5,11 @@ import android.animation.AnimatorSet
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.GridLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.kenansoylu.bauproject.R
 
 class GameActivity : AppCompatActivity() {
-    private val cardBackLayout = findViewById<FrameLayout>(R.id.card_back)
-    private val cardFrontLayout = findViewById<FrameLayout>(R.id.card_front)
-
-    private val mSetRightOut =
-        AnimatorInflater.loadAnimator(this, R.animator.out_animation) as AnimatorSet
-    private val mSetLeftIn =
-        AnimatorInflater.loadAnimator(this, R.animator.in_animation) as AnimatorSet
 
     private var isBackVisible = false
 
@@ -24,6 +18,11 @@ class GameActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_game)
 
+        val cardBackLayout = findViewById<FrameLayout>(R.id.card_back)
+        val cardFrontLayout = findViewById<FrameLayout>(R.id.card_front)
+
+        val gameBoard = findViewById<GridLayout>(R.id.gameBoard)
+
         val distance = 3000
         val scale = resources.displayMetrics.density * distance
         cardFrontLayout.cameraDistance = scale
@@ -31,6 +30,15 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun flipCard(view: View) {
+        val cardBackLayout = findViewById<FrameLayout>(R.id.card_back)
+        val cardFrontLayout = findViewById<FrameLayout>(R.id.card_front)
+
+        val mSetRightOut =
+            AnimatorInflater.loadAnimator(this, R.animator.out_animation) as AnimatorSet
+        val mSetLeftIn =
+            AnimatorInflater.loadAnimator(this, R.animator.in_animation) as AnimatorSet
+
+
         isBackVisible = if (!isBackVisible) {
             mSetRightOut.setTarget(cardFrontLayout)
             mSetLeftIn.setTarget(cardBackLayout)

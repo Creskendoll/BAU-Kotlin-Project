@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.LeadersAdapter
 import com.kenansoylu.bauproject.data.UserData
@@ -14,20 +15,27 @@ import java.lang.Exception
 
 class LeadersActivity : AppCompatActivity() {
 
-    private var userService = UserService(this)
+    private lateinit var userService: UserService
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leaders)
 
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        swipeRefresh.isRefreshing = true
+
         userService = UserService(applicationContext)
+
+        swipeRefresh.setOnRefreshListener {
+            this.userService.getAllUsers(::populateList, ::onError)
+        }
 
         this.userService.getAllUsers(::populateList, ::onError)
     }
 
     private fun onLeaderClick(userData: UserData) {
         val profileIntent = Intent(this@LeadersActivity, ProfileActivity::class.java)
-        profileIntent.putExtra("is_user", false)
         profileIntent.putExtra("player_id", userData.id)
         startActivity(profileIntent)
     }
@@ -35,6 +43,7 @@ class LeadersActivity : AppCompatActivity() {
     private fun populateList(users: List<UserData>) {
         leadersList.layoutManager = LinearLayoutManager(this)
         leadersList.adapter = LeadersAdapter(users, ::onLeaderClick)
+        swipeRefresh.isRefreshing = false
     }
 
     private fun onError(e: Exception) {

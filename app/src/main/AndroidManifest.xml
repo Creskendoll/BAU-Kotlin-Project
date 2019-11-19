@@ -19,8 +19,10 @@
         <activity android:name=".activity.LeadersActivity" />
         <activity android:name=".activity.ProfileActivity" />
         <activity android:name=".activity.GameActivity" />
+        <activity android:name=".activity.ChangeAvatarActivity" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 </manifest>
