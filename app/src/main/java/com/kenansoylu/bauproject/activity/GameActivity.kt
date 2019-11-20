@@ -10,6 +10,7 @@ import android.widget.TableLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.kenansoylu.bauproject.R
 import android.view.ViewGroup
+import android.widget.ImageView
 
 
 class GameActivity : AppCompatActivity() {
@@ -17,6 +18,21 @@ class GameActivity : AppCompatActivity() {
     val LEVEL = 1
 
 //    lateinit var cards : List<View>
+
+    private val cardImages = listOf(
+        R.mipmap.go,
+        R.mipmap.cs,
+        R.mipmap.cpp,
+        R.mipmap.java,
+        R.mipmap.js,
+        R.mipmap.kotlin,
+        R.mipmap.lua,
+        R.mipmap.php,
+        R.mipmap.py,
+        R.mipmap.ruby,
+        R.mipmap.rust,
+        R.mipmap.ts
+    )
 
     private lateinit var gameBoard: TableLayout
 
@@ -102,16 +118,34 @@ class GameActivity : AppCompatActivity() {
         }, secondDelay)
     }
 
+
     private fun start() {
+        val shuffledImages = cardImages.shuffled()
+        // Get N random card images
+        val selectedImages = (0..LEVEL+2).map { shuffledImages[it] }.toMutableList()
+        // Starting from 0
+        val gameSize = 2*LEVEL + 3
         val cards = getViewsByTag(gameBoard, "front_visible")
 
+        // Randomly set pairs
+        // Shuffled odd indexes
+        val oddIndexes = (1 until gameSize+1 step 2).toList().shuffled()
+        // Randomly set images
+        (0 until gameSize step 2).shuffled().mapIndexed { index, num ->
+            val img = selectedImages.removeAt(0)
+            // Even card
+            cards[num].findViewById<ImageView>(R.id.front_image).setImageResource(img)
+            // Odd card
+            // Get the odd indexes using an index since num is not sequential
+            cards[oddIndexes[index]].findViewById<ImageView>(R.id.front_image).setImageResource(img)
+        }
+
         cards.forEachIndexed { index, view ->
-            val firstDelay = ((index * 20) + 100).toLong()
+            val firstDelay = ((index * 30) + 100).toLong()
             val secondDelay = ((index * 50) + 1300).toLong()
             fullFlip(view, firstDelay, secondDelay)
         }
     }
-
     fun flipCard(view: View) {
 
         // Animators have to be loaded separately for each view
