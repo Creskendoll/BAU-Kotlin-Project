@@ -1,65 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/gameBoard"
+    android:id="@+id/change_avatar_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:columnCount="4"
-    android:rowCount="4"
     app:layout_anchorGravity="center"
+    android:gravity="center"
     tools:context=".activity.ChangeAvatarActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_first_avatar" />
+    <TableRow
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_first_avatar" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_second_avatar" />
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_second_avatar" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_third_avatar" />
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_third_avatar" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_fourth_avatar" />
+    </TableRow>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_fifth_avatar" />
+    <TableRow
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_fourth_avatar" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_sixth_avatar" />
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_fifth_avatar" />
+
+        <ImageView
+            android:tag="default_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:src="@mipmap/ic_sixth_avatar" />
+
+    </TableRow>
+
 
     <Button
         android:id="@+id/pickImageBtn"
-        android:text="Gallery"
-        android:layout_gravity="center"
-        />
-
-    <ImageView
-        android:id="@+id/selectedImg"
-        android:maxHeight="50dp"
-        android:maxWidth="50dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:src="@mipmap/ic_sixth_avatar" />
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:height="80dp"
+        android:background="@drawable/round_button_green"
+        android:text="Gallery"/>
 
-</GridLayout>
+</TableLayout>

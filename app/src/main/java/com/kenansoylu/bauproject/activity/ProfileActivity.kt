@@ -38,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
         // Initially hide button
         findViewById<Button>(R.id.updateBtn).visibility = View.GONE
 
-        findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
+        findViewById<ImageButton>(R.id.profileAvatar).setOnClickListener {
             if (userID == playerID) {
                 val avatarsIntent = Intent(this@ProfileActivity, ChangeAvatarActivity::class.java)
                 startActivityForResult(avatarsIntent, AVATAR_REQUEST)
@@ -46,6 +46,22 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         populateScreen(playerID)
+    }
+
+    private fun updateUser(oldUser : UserData, newUser : UserData) {
+        userService.updateUser(oldUser, newUser, {
+            Toast.makeText(applicationContext, "Successfully updated user.", Toast.LENGTH_SHORT)
+                .show()
+
+            val nameEditTxt = findViewById<EditText>(R.id.nickNameTxt)
+            // Hide keyboard
+            val imm =
+                applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(nameEditTxt.windowToken, 0)
+        }, {
+            Toast.makeText(applicationContext, "Failed to update user!", Toast.LENGTH_SHORT)
+                .show()
+        })
     }
 
     private fun onGetUser(userData: UserData) {
@@ -62,6 +78,7 @@ class ProfileActivity : AppCompatActivity() {
         nameEditTxt.text = Editable.Factory.getInstance().newEditable(userData.name)
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
 
+        // Update user on button click
         findViewById<Button>(R.id.updateBtn).setOnClickListener {
             val newUser = UserData(
                 userData.id,
@@ -69,18 +86,7 @@ class ProfileActivity : AppCompatActivity() {
                 userData.avatarURI,
                 userData.scores
             )
-            userService.updateUser(userData, newUser, {
-                Toast.makeText(applicationContext, "Successfully updated user.", Toast.LENGTH_SHORT)
-                    .show()
-
-                // Hide keyboard
-                val imm =
-                    applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(nameEditTxt.windowToken, 0)
-            }, {
-                Toast.makeText(applicationContext, "Failed to update user!", Toast.LENGTH_SHORT)
-                    .show()
-            })
+            updateUser(userData, newUser)
         }
     }
 
@@ -106,12 +112,7 @@ class ProfileActivity : AppCompatActivity() {
                         newAvatar,
                         it.scores
                     )
-                    spManager.saveUser(newUser)
-                    userService.updateUser(
-                        curUser,
-                        newUser,
-                        { Log.d("PROFILE", "Updated avatar") },
-                        { Log.e("PROFILE", "can't update avatar") })
+                    updateUser(curUser, newUser)
 
                     DisplayImage(findViewById(R.id.profileAvatar)).execute(newAvatar)
                 }

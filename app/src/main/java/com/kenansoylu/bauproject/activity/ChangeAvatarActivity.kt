@@ -7,9 +7,16 @@ import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.services.ResourceService
 import android.content.Intent
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.provider.OpenableColumns
 import android.net.Uri
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TableLayout
+import java.io.ByteArrayOutputStream
 
 
 class ChangeAvatarActivity : AppCompatActivity() {
@@ -35,6 +42,38 @@ class ChangeAvatarActivity : AppCompatActivity() {
             // Launching the Intent
             startActivityForResult(intent, GALLERY_REQUEST_CODE)
         }
+
+        // Set on click to default avatars
+        val root = findViewById<TableLayout>(R.id.change_avatar_root)
+        getViewsByTag(root, "default_avatar").forEach {
+            val imgView = it as ImageView
+            it.setOnClickListener {
+                val bitmapDrawable = imgView.drawable as BitmapDrawable
+                val bitmap = bitmapDrawable.bitmap
+                val stream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val byteArray = stream.toByteArray()
+                val savePath = "avatars/${byteArray.hashCode()}"
+                resourceService.writeData(savePath, byteArray, ::onPickAvatar, ::onError)
+            }
+        }
+    }
+
+    // https://stackoverflow.com/questions/5062264/find-all-views-with-tag
+    private fun getViewsByTag(root: ViewGroup, tag: String?): ArrayList<View> {
+        val views = ArrayList<View>()
+        val childCount = root.childCount
+        for (i in 0 until childCount) {
+            val child = root.getChildAt(i)
+            if (child is ViewGroup) {
+                views.addAll(getViewsByTag(child, tag))
+            }
+            val tagObj = child.tag
+            if (tagObj != null && tagObj == tag) {
+                views.add(child)
+            }
+        }
+        return views
     }
 
     private fun onPickAvatar(url: String) {
@@ -91,8 +130,6 @@ class ChangeAvatarActivity : AppCompatActivity() {
                         val byteArray = inputStream?.readBytes()!!
 
                         resourceService.writeData(savePath, byteArray, ::onPickAvatar, ::onError)
-
-//                        findViewById<ImageView>(R.id.selectedImg).setImageURI(selectedImage)
                     }
                 }
             }

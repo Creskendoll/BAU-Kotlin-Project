@@ -4,12 +4,15 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/profileAvatar"
-        android:layout_width="match_parent"
+        android:layout_width="120dp"
         android:layout_height="120dp"
+        android:scaleType="fitCenter"
+        android:background="@drawable/round_avatar"
+        android:layout_gravity="center"
         android:src="@mipmap/ic_first_avatar"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:text="HIGHSCORE"
@@ -19,7 +22,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/highscoreTxt"
         android:textSize="20sp"
-        android:layout_marginTop="25dp" />
+        android:layout_marginTop="30dp" />
 
     <EditText
         android:layout_width="match_parent"
@@ -36,8 +39,9 @@
         android:id="@+id/updateBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:height="80dp"
         android:background="@drawable/round_button_blue"
         android:text="Update"

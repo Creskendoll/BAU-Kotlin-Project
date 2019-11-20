@@ -6,10 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
@@ -76,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             signOut()
         }
 
-        findViewById<ImageView>(R.id.profileAvatar).setOnClickListener {
+        findViewById<ImageButton>(R.id.profileAvatar).setOnClickListener {
             if (this.auth.currentUser != null) {
                 val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
                 profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
@@ -121,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.nickNameTxt).text = ""
             findViewById<TextView>(R.id.highscoreTxt).text = ""
             findViewById<TextView>(R.id.scoreTxt).text = ""
-            findViewById<ImageView>(R.id.profileAvatar).setImageResource(R.mipmap.ic_first_avatar)
+            findViewById<ImageButton>(R.id.profileAvatar).setImageResource(R.mipmap.ic_first_avatar)
             Toast.makeText(applicationContext, "Successfully signed out.", Toast.LENGTH_SHORT)
                 .show()
         }
