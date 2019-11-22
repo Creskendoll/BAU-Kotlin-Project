@@ -10,8 +10,8 @@ import com.kenansoylu.bauproject.misc.DisplayImage
 import kotlinx.android.synthetic.main.player_row.view.*
 
 class LeadersAdapter(
-    val leaders: List<UserData>,
-    val onClick: (UserData) -> Unit
+    private val leaders: List<UserData>,
+    private val onClick: (UserData) -> Unit
 ) : RecyclerView.Adapter<LeadersAdapter.LeadersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadersViewHolder {

@@ -1,3 +1,3 @@
 package com.kenansoylu.bauproject.data
 
-data class CardData(val imageURI: String, val point: Long)
+data class CardData(val imageResource: Int, val point: Long)

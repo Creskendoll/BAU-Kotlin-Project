@@ -1,56 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/gameBoard"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".activity.GameActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TableRow
+    <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/game_card"
+        android:id="@+id/gameBoardRV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-    </TableRow>
-
-    <TableRow
-        android:gravity="center"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-        <include
-            android:layout_height="120dp"
-            android:layout_width="120dp"
-            layout="@layout/game_card" />
-
-    </TableRow>
-
-</TableLayout>
+        android:background="@android:color/white" />
+</RelativeLayout>

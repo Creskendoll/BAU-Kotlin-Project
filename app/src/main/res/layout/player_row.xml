@@ -15,8 +15,7 @@
         android:layout_marginStart="10dp"
         android:layout_alignParentStart="true"
         tools:src="@mipmap/ic_first_avatar"
-        android:layout_centerInParent="true"
-        android:src="@mipmap/ic_first_avatar" />
+        android:layout_centerInParent="true" />
 
     <TextView android:layout_width="wrap_content"
         android:id="@+id/playerName"
@@ -38,7 +37,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_width="wrap_content"
-        tools:text="points"
+        tools:text="high score"
         android:textSize="20sp"
         android:textColor="@color/colorAccent"
         android:layout_height="wrap_content"/>
