@@ -31,78 +31,55 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+        // Init services
         spManager = SharedPreferenceManager(applicationContext)
         userService = UserService(applicationContext)
 
-
         findViewById<Button>(R.id.leadersBtn).setOnClickListener {
-            if (this.auth.currentUser == null) {
-                val providers = arrayListOf(
-                    AuthUI.IdpConfig.EmailBuilder().build()
-                )
-                // Create and launch sign-in intent
-                startActivityForResult(
-                    AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(), LOGIN_CODE
-                )
-            } else {
+            if (this.auth.currentUser == null) // If user is not signed in
+                signIn()
+            else // If the user is signed in start the leaders activity
                 startActivity(Intent(this@MainActivity, LeadersActivity::class.java))
-            }
         }
-
         findViewById<Button>(R.id.playBtn).setOnClickListener {
-            if (this.auth.currentUser == null) {
-                val providers = arrayListOf(
-                    AuthUI.IdpConfig.EmailBuilder().build()
-                )
-                // Create and launch sign-in intent
-                startActivityForResult(
-                    AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(), LOGIN_CODE
-                )
-            } else {
-                val gameIntent = Intent(this@MainActivity, GameActivity::class.java)
-                startActivity(gameIntent)
-            }
+            if (this.auth.currentUser == null) // If the user is not signed in
+                signIn()
+            else // Start game if the user is signed in
+                startActivity(Intent(this@MainActivity, GameActivity::class.java))
         }
         findViewById<Button>(R.id.signOutBtn).setOnClickListener {
             signOut()
         }
-
         findViewById<ImageButton>(R.id.profileAvatar).setOnClickListener {
+            // Navigate to profile edit activity if the user is signed in
             if (this.auth.currentUser != null) {
                 val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
                 profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
                 startActivity(profileIntent)
             }
         }
-
-//        Log.d("USER DATA:", this.spManager.getUser()?.serialize().toString())
-
         initUser(this.auth.currentUser)
     }
 
     private fun setUserFields(userData: UserData) {
+        // Set UI fields
         findViewById<TextView>(R.id.nickNameTxt).text = userData.name
         findViewById<TextView>(R.id.scoreTxt).text =
-            "Score: " + userData.scores.firstOrNull()?.toString()
+            "Score: ${userData.scores.firstOrNull()}"
         findViewById<TextView>(R.id.highscoreTxt).text =
-            "High score: " + userData.scores.max()?.toString()
+            "High score: ${userData.scores.max()}"
         findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
     }
 
     private fun initUser(user: FirebaseUser?) {
+        //Initialize the user using a firebase user
         val userData = this.spManager.getUser()
-        Log.d("USER DATA:", userData.toString())
 
         if (userData != null) {
             setUserFields(userData)
         } else {
+            // Hide sign out button
             findViewById<Button>(R.id.signOutBtn).visibility = View.GONE
 
             if (user != null) {
@@ -112,8 +89,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun signIn() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build()
+        )
+        // Create and launch sign-in intent
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build(), LOGIN_CODE
+        )
+    }
+
     private fun signOut() {
         AuthUI.getInstance().signOut(this).addOnCompleteListener {
+            // Reset UI fields
             findViewById<Button>(R.id.signOutBtn).visibility = View.GONE
             findViewById<TextView>(R.id.nickNameTxt).text = ""
             findViewById<TextView>(R.id.highscoreTxt).text = ""
@@ -139,6 +130,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+        // We don't have to pass a firebase user since we expect to have the user data
+        // in the shared preferences
         initUser(null)
     }
 
@@ -148,7 +141,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == LOGIN_CODE) {
             val response = IdpResponse.fromResultIntent(data)
 
-
             if (resultCode == Activity.RESULT_OK) {
                 // Might have to get a new instance
 //                val user = FirebaseAuth.getInstance().currentUser
@@ -156,11 +148,12 @@ class MainActivity : AppCompatActivity() {
                 val defaultPic =
                     "https://pbs.twimg.com/profile_images/1002933519629389824/rMED8za4_400x400.jpg"
                 val defaultName = "Guest"
+                // Create default user with default values
                 val userData = UserData(
                     user?.uid ?: "-1",
                     user?.displayName ?: defaultName,
                     defaultPic,
-                    listOf(0)
+                    listOf(0) // Scores are 0
                 )
 
                 // Will not run if response is null
@@ -179,14 +172,13 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
 
+                // Save user to shared preferences
                 spManager.saveUser(userData)
 
+                // Set UI fields
                 initUser(user)
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
+                // Sign in failed
                 Toast.makeText(applicationContext, "Sign in cancelled!", Toast.LENGTH_SHORT).show()
             }
         }
