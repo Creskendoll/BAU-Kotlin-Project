@@ -4,6 +4,7 @@ import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -33,27 +34,18 @@ class GameActivity : AppCompatActivity() {
         R.mipmap.ts
     )
 
+    private val resolvedCards = mutableListOf<Pair<View, CardData>>()
+    private var openCardData: CardData? = null
+    private var openCard: View? = null
+
+    private var gameSize = 2 * LEVEL + 4
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        setSupportActionBar(findViewById(R.id.game_toolbar))
 
-//        Log.d("RES", resources.displayMetrics.density.toString())
-
-        val gameSize = 2 * LEVEL + 4
-
-        val gridManager = GridLayoutManager(this, 3)
-        val cards = getCards(gameSize)
-
-        with(gameBoardRV) {
-            layoutManager = gridManager
-            adapter = GameBoardAdapter(cards, ::onCardClick)
-        }
-
-        // TODO: Find a better way to run initGame after recycler view mounts
-        // Delay animation
-        Handler().postDelayed({
-            initGame()
-        }, 100)
+        initGame()
     }
 
     private fun flipCard(cardView: View) {
@@ -99,18 +91,79 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun initGame() {
-        val cardsViews = getViewsByTag(gameBoardRV, "front_visible")
 
-        // Flip the cards twice with a delay
-        cardsViews.forEachIndexed { index, view ->
-            val firstDelay = ((index * 50) + 100).toLong()
-            val secondDelay = ((index * 50) + 1300).toLong()
-            fullFlip(view, firstDelay, secondDelay)
+        val gridManager = GridLayoutManager(this, 3)
+        val cards = getCards(gameSize)
+
+        with(gameBoardRV) {
+            layoutManager = gridManager
+            adapter = GameBoardAdapter(cards, ::onCardClick)
         }
+
+        // TODO: Find a better way to run initGame after recycler view mounts
+        // Delay animation
+        Handler().postDelayed({
+            val cardsViews = getViewsByTag(gameBoardRV, "front_visible")
+
+            // Flip the cards twice with a delay
+            cardsViews.forEachIndexed { index, view ->
+                val firstDelay = ((index * 50) + 100).toLong()
+                val secondDelay = ((index * 50) + 1300).toLong()
+                fullFlip(view, firstDelay, secondDelay)
+            }
+        }, 200)
     }
 
     private fun onCardClick(cardView: View, cardData: CardData) {
-        flipCard(cardView)
+
+        // TODO: reformat code
+        if (!resolvedCards.contains(Pair(cardView, cardData))) {
+            // if a card is previously opened
+            if (openCardData != null && openCard != null) {
+                // flip the recent card
+                flipCard(cardView)
+                // compare recent card with previously opened card
+                if (openCardData!!.imageResource == cardData.imageResource) {
+                    // if the previous and recent card are the same
+                    Log.d("GAME", "Correct")
+                    resolvedCards.add(Pair(cardView, cardData))
+                    resolvedCards.add(Pair(openCard!!, openCardData!!))
+
+                    openCard = null
+                    openCardData = null
+
+                    if(resolvedCards.size == gameSize){
+                        // If all the cards are opened
+                        Log.d("GAME", "Next level")
+                        gameSize += 2
+
+                        Handler().postDelayed({
+                            resolvedCards.forEach {
+                                flipCard(it.first)
+                            }
+                            resolvedCards.removeAll { true }
+                            initGame()
+                        }, 800)
+
+                    }
+                } else {
+                    // If cards don't match
+                    Log.d("GAME", "Incorrect")
+                    Handler().postDelayed({
+                        flipCard(cardView)
+                        flipCard(openCard!!)
+                        openCard = null
+                        openCardData = null
+                    }, 800)
+                }
+            } else {
+                // open first card
+                flipCard(cardView)
+                // store card in temp variables
+                openCard = cardView
+                openCardData = cardData
+            }
+        }
     }
 
     private fun getCards(count: Int): List<CardData> {
