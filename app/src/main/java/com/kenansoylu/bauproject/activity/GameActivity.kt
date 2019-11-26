@@ -3,21 +3,26 @@ package com.kenansoylu.bauproject.activity
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.util.Log
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.GameBoardAdapter
 import com.kenansoylu.bauproject.data.CardData
+import com.kenansoylu.bauproject.misc.Helpers
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.math.ceil
+import kotlin.math.roundToInt
+
 
 class GameActivity : AppCompatActivity() {
-    private val LEVEL = 1
 
     private val cardImages = listOf(
         R.mipmap.go,
@@ -38,7 +43,11 @@ class GameActivity : AppCompatActivity() {
     private var openCardData: CardData? = null
     private var openCard: View? = null
 
-    private var gameSize = 2 * LEVEL + 4
+    private var gameSize = 6
+
+    private lateinit var timerTxt : TextView
+    private lateinit var scoreTxt : TextView
+    private lateinit var timer : CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +56,47 @@ class GameActivity : AppCompatActivity() {
 
         initGame()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.game_toolbar, menu)
+
+        // TODO: Remove title from toolbar
+        actionBar?.run{
+            setDisplayShowTitleEnabled(false)
+        }
+
+        menu?.let {
+            val menuTimer = it.findItem(R.id.menu_timer)
+            timerTxt = menuTimer.actionView as TextView
+            timerTxt.textSize = 25f
+            timerTxt.setPadding(0,0,20,0)
+
+            val menuScore = it.findItem(R.id.menu_score)
+            scoreTxt = menuScore.actionView as TextView
+            scoreTxt.textSize = 25f
+            scoreTxt.setPadding(20,0,0,0)
+        }
+
+        startTimer(120000,1000)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    private fun startTimer(duration: Long, interval: Long) {
+        timer = object : CountDownTimer(duration, interval) {
+            override fun onFinish() { //TODO Whatever's meant to happen when it finishes
+            }
+
+            override fun onTick(millisecondsLeft: Long) {
+                val secondsLeft =
+                    (millisecondsLeft / 1000.toDouble()).roundToInt()
+                timerTxt.text = Helpers.secondsToString(secondsLeft)
+            }
+        }
+        timer.start()
+    }
+
 
     private fun flipCard(cardView: View) {
         // Animators have to be loaded separately for each view
@@ -135,16 +185,24 @@ class GameActivity : AppCompatActivity() {
                     if(resolvedCards.size == gameSize){
                         // If all the cards are opened
                         Log.d("GAME", "Next level")
-                        gameSize += 2
 
+                        // flip back the open cards and init a new game
+                        val baseDelay = 400L
+                        val incrementDelay = 50L
+                        val totalDelay = baseDelay*2 + (gameSize*incrementDelay)
+                        getViewsByTag(gameBoardRV, "back_visible").forEachIndexed { index, view->
+                            val delay = baseDelay + (index * incrementDelay)
+                            Handler().postDelayed({
+                                flipCard(view)
+                            }, delay)
+                        }
+
+                        // init a new game
                         Handler().postDelayed({
-                            resolvedCards.forEach {
-                                flipCard(it.first)
-                            }
                             resolvedCards.removeAll { true }
+                            gameSize += 2
                             initGame()
-                        }, 800)
-
+                        }, totalDelay)
                     }
                 } else {
                     // If cards don't match
