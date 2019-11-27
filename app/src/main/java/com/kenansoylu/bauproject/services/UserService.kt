@@ -19,7 +19,7 @@ class UserService(context: Context) {
                     it.id,
                     it.data["name"] as String,
                     it.data["avatarURI"] as String,
-                    it.data["scores"] as List<Long>
+                    it.data["scores"] as MutableList<Long>
                 )
             }
             then(players)
@@ -34,7 +34,7 @@ class UserService(context: Context) {
                 userID,
                 it["name"] as String,
                 it["avatarURI"] as String,
-                it["scores"] as List<Long>
+                it["scores"] as MutableList<Long>
             )
 
             then(userData)

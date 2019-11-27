@@ -11,14 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.GameBoardAdapter
 import com.kenansoylu.bauproject.data.CardData
 import com.kenansoylu.bauproject.misc.Helpers
+import com.kenansoylu.bauproject.misc.SharedPreferenceManager
+import com.kenansoylu.bauproject.services.UserService
 import kotlinx.android.synthetic.main.activity_game.*
+import java.lang.Exception
 import kotlin.math.ceil
+import kotlin.math.log
 import kotlin.math.roundToInt
 
 
@@ -40,14 +45,15 @@ class GameActivity : AppCompatActivity() {
     )
 
     private val resolvedCards = mutableListOf<Pair<View, CardData>>()
-    private var openCardData: CardData? = null
-    private var openCard: View? = null
+    private val flipStack = mutableListOf<Pair<View, CardData>>()
 
     private var gameSize = 6
+    private var gameRunning = false
+    private var score = 0L
 
-    private lateinit var timerTxt : TextView
-    private lateinit var scoreTxt : TextView
-    private lateinit var timer : CountDownTimer
+    private lateinit var timerTxt: TextView
+    private lateinit var scoreTxt: TextView
+    private lateinit var timer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +67,7 @@ class GameActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.game_toolbar, menu)
 
         // TODO: Remove title from toolbar
-        actionBar?.run{
+        actionBar?.run {
             setDisplayShowTitleEnabled(false)
         }
 
@@ -69,23 +75,40 @@ class GameActivity : AppCompatActivity() {
             val menuTimer = it.findItem(R.id.menu_timer)
             timerTxt = menuTimer.actionView as TextView
             timerTxt.textSize = 25f
-            timerTxt.setPadding(0,0,20,0)
+            timerTxt.setPadding(0, 0, 100, 0)
 
             val menuScore = it.findItem(R.id.menu_score)
             scoreTxt = menuScore.actionView as TextView
             scoreTxt.textSize = 25f
-            scoreTxt.setPadding(20,0,0,0)
+            scoreTxt.setPadding(0, 0, 20, 0)
+            scoreTxt.text = "0"
         }
 
-        startTimer(120000,1000)
+        startTimer(20000, 1000)
 
         return super.onCreateOptionsMenu(menu)
     }
 
+    private fun onError(e : Exception) {
+
+    }
 
     private fun startTimer(duration: Long, interval: Long) {
         timer = object : CountDownTimer(duration, interval) {
-            override fun onFinish() { //TODO Whatever's meant to happen when it finishes
+            override fun onFinish() {
+                val spManager = SharedPreferenceManager(applicationContext)
+                val userService = UserService(applicationContext)
+                val oldUser = spManager.getUser()
+                spManager.getUser()?.let {
+                    it.scores.add(score)
+                    spManager.saveUser(it)
+                    userService.updateUser(oldUser!!, it, {
+                        Toast.makeText(applicationContext, "Saved score!", Toast.LENGTH_SHORT)
+                            .show()
+                    }, ::onError)
+                }
+
+                gameRunning = false
             }
 
             override fun onTick(millisecondsLeft: Long) {
@@ -158,68 +181,68 @@ class GameActivity : AppCompatActivity() {
             // Flip the cards twice with a delay
             cardsViews.forEachIndexed { index, view ->
                 val firstDelay = ((index * 50) + 100).toLong()
-                val secondDelay = ((index * 50) + 1300).toLong()
+                val secondDelay = ((index * 50) + 1500).toLong()
                 fullFlip(view, firstDelay, secondDelay)
             }
+            gameRunning = true
         }, 200)
     }
 
     private fun onCardClick(cardView: View, cardData: CardData) {
+        val newFlip = Pair(cardView, cardData)
 
-        // TODO: reformat code
-        if (!resolvedCards.contains(Pair(cardView, cardData))) {
-            // if a card is previously opened
-            if (openCardData != null && openCard != null) {
-                // flip the recent card
-                flipCard(cardView)
-                // compare recent card with previously opened card
-                if (openCardData!!.imageResource == cardData.imageResource) {
-                    // if the previous and recent card are the same
+        if (!resolvedCards.contains(newFlip) && gameRunning) {
+            flipCard(cardView)
+            val prevFlip = flipStack.lastOrNull()
+
+            prevFlip?.let {
+                if(it.second.imageResource == cardData.imageResource){
                     Log.d("GAME", "Correct")
-                    resolvedCards.add(Pair(cardView, cardData))
-                    resolvedCards.add(Pair(openCard!!, openCardData!!))
 
-                    openCard = null
-                    openCardData = null
+                    // Add new card to the beginning of the list
+                    resolvedCards.add(it)
+                    resolvedCards.add(newFlip)
+                    flipStack.remove(it)
 
-                    if(resolvedCards.size == gameSize){
-                        // If all the cards are opened
-                        Log.d("GAME", "Next level")
-
-                        // flip back the open cards and init a new game
-                        val baseDelay = 400L
-                        val incrementDelay = 50L
-                        val totalDelay = baseDelay*2 + (gameSize*incrementDelay)
-                        getViewsByTag(gameBoardRV, "back_visible").forEachIndexed { index, view->
-                            val delay = baseDelay + (index * incrementDelay)
-                            Handler().postDelayed({
-                                flipCard(view)
-                            }, delay)
-                        }
-
-                        // init a new game
-                        Handler().postDelayed({
-                            resolvedCards.removeAll { true }
-                            gameSize += 2
-                            initGame()
-                        }, totalDelay)
-                    }
+                    // Set score
+                    score += cardData.point
+                    scoreTxt.text = score.toString()
                 } else {
-                    // If cards don't match
                     Log.d("GAME", "Incorrect")
+
                     Handler().postDelayed({
+                        flipCard(it.first)
                         flipCard(cardView)
-                        flipCard(openCard!!)
-                        openCard = null
-                        openCardData = null
-                    }, 800)
+                    }, 600)
+                    flipStack.remove(it)
                 }
-            } else {
-                // open first card
-                flipCard(cardView)
-                // store card in temp variables
-                openCard = cardView
-                openCardData = cardData
+            } ?: let {
+                flipStack.add(newFlip)
+            }
+
+            if(resolvedCards.size == gameSize){
+                gameRunning = false
+                // If all the cards are opened
+                Log.d("GAME", "Next level")
+
+                // flip back the open cards and init a new game
+                val baseDelay = 400L
+                val incrementDelay = 50L
+                val totalDelay = baseDelay*2 + (gameSize*incrementDelay)
+                getViewsByTag(gameBoardRV, "back_visible").forEachIndexed { index, view->
+                    val delay = baseDelay + (index * incrementDelay)
+                    Handler().postDelayed({
+                        flipCard(view)
+                    }, delay)
+                }
+
+                // init a new game
+                Handler().postDelayed({
+                    resolvedCards.removeAll { true }
+                    flipStack.removeAll { true }
+                    gameSize += 2
+                    initGame()
+                }, totalDelay)
             }
         }
     }

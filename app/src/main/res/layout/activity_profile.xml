@@ -16,7 +16,7 @@
         android:layout_marginTop="30dp"/>
 
     <TextView
-        android:text="HIGHSCORE"
+        tools:text="HIGHSCORE"
         android:gravity="center"
         android:textColor="@color/blackText"
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NAME"
+        tools:text="NAME"
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:textColor="@color/blackText"

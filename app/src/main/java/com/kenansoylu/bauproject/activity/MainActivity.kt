@@ -65,9 +65,9 @@ class MainActivity : AppCompatActivity() {
         // Set UI fields
         findViewById<TextView>(R.id.nickNameTxt).text = userData.name
         findViewById<TextView>(R.id.scoreTxt).text =
-            "Score: ${userData.scores.firstOrNull()}"
+            "Latest Score : ${userData.scores.lastOrNull()}"
         findViewById<TextView>(R.id.highscoreTxt).text =
-            "High score: ${userData.scores.max()}"
+            "${getString(R.string.high_score)} : ${userData.scores.max()}"
         findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
     }
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                     user?.uid ?: "-1",
                     user?.displayName ?: defaultName,
                     defaultPic,
-                    listOf(0) // Scores are 0
+                    mutableListOf(0) // Scores are 0
                 )
 
                 // Will not run if response is null

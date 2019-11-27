@@ -4,7 +4,7 @@ data class UserData(
     val id: String,
     val name: String,
     val avatarURI: String,
-    val scores: List<Long>
+    val scores: MutableList<Long>
 ) {
     fun serialize(): Map<String, Any> {
         return mapOf(

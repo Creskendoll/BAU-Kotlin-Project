@@ -1,7 +1,8 @@
 package com.kenansoylu.bauproject.misc
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kenansoylu.bauproject.data.UserData
 
 class SharedPreferenceManager(val context: Context) {
@@ -21,12 +22,15 @@ class SharedPreferenceManager(val context: Context) {
         }
     }
 
+    inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object: TypeToken<T>() {}.type)
+
     fun getUser(): UserData? {
         val id = getData("id") ?: ""
         val avatarURI = getData("avatarURI") ?: ""
         val name = getData("name") ?: ""
         // TODO: String to int list
-        val scores = listOf(0L)
+        val scoresTxt = getData("scores") ?: ""
+        val scores = Gson().fromJson<MutableList<Long>>(scoresTxt)
 
         return if (id == "") null
         else UserData(id, name, avatarURI, scores)
@@ -36,7 +40,8 @@ class SharedPreferenceManager(val context: Context) {
         saveData("id", userData.id)
         saveData("avatarURI", userData.avatarURI)
         saveData("name", userData.name)
-        saveData("scores", userData.scores.toString())
+        val scoresStr = Gson().toJson(userData.scores)
+        saveData("scores", scoresStr)
     }
 
     fun deleteUser() {
