@@ -2,33 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/cardBg"
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/game_toolbar"
-        app:title=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="4dp"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
-
-<!--    <TextView-->
-<!--        android:id="@+id/timeTV"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_weight="1"-->
-<!--        android:textColor="@color/blackText"-->
-<!--        android:text="zxczxc" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/scoreTV"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_weight="1"-->
-<!--        android:text="TextView" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         tools:listitem="@layout/game_card"
@@ -38,7 +22,6 @@
         android:layout_below="@+id/game_toolbar"
         android:layout_gravity="center"
         android:gravity="center"
-        android:background="@android:color/white" />
-
+        android:background="@color/cardBg" />
 
 </RelativeLayout>

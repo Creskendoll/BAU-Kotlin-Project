@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.EndActivity">
+
+    <TextView
+        android:id="@+id/finalScoreTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="SCORE"
+        android:layout_margin="60dp"
+        android:textSize="36sp" />
+
+    <Button
+        android:id="@+id/retryBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:width="200dp"
+        android:height="80dp"
+        android:background="@drawable/round_button_blue"
+        android:text="Retry" />
+
+    <Button
+        android:id="@+id/quitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="200dp"
+        android:height="80dp"
+        android:layout_margin="30dp"
+        android:background="@drawable/round_button_red"
+        android:text="Quit" />
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.kenansoylu.bauproject.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,8 @@ import kotlinx.android.synthetic.main.player_row.view.*
 
 class LeadersAdapter(
     private val leaders: List<UserData>,
-    private val onClick: (UserData) -> Unit
+    private val onClick: (UserData) -> Unit,
+    private val currentUserId : String
 ) : RecyclerView.Adapter<LeadersAdapter.LeadersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadersViewHolder {
@@ -23,12 +25,15 @@ class LeadersAdapter(
     override fun getItemCount() = leaders.size
 
     override fun onBindViewHolder(holder: LeadersViewHolder, position: Int) {
-        holder.bind(leaders[position], onClick)
+        holder.bind(leaders[position], onClick, currentUserId)
     }
 
     class LeadersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(userData: UserData, clickListener: (UserData) -> Unit) {
+        fun bind(userData: UserData, clickListener: (UserData) -> Unit, currentUserId: String) {
+            if(currentUserId == userData.id)
+                itemView.setBackgroundColor(Color.parseColor("#7403D8F4"))
+
             itemView.playerName.text = userData.name
             itemView.playerScore.text = userData.scores.max().toString()
             DisplayImage(itemView.playerAvatar).execute(userData.avatarURI)

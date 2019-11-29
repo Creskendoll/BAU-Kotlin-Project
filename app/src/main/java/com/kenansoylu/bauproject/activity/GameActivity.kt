@@ -2,6 +2,7 @@ package com.kenansoylu.bauproject.activity
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -84,7 +85,7 @@ class GameActivity : AppCompatActivity() {
             scoreTxt.text = "0"
         }
 
-        startTimer(20000, 1000)
+        startTimer(30000)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -93,9 +94,11 @@ class GameActivity : AppCompatActivity() {
 
     }
 
-    private fun startTimer(duration: Long, interval: Long) {
-        timer = object : CountDownTimer(duration, interval) {
+    private fun startTimer(duration: Long) {
+        timer = object : CountDownTimer(duration, 1000) {
             override fun onFinish() {
+                gameRunning = false
+
                 val spManager = SharedPreferenceManager(applicationContext)
                 val userService = UserService(applicationContext)
                 val oldUser = spManager.getUser()
@@ -105,10 +108,12 @@ class GameActivity : AppCompatActivity() {
                     userService.updateUser(oldUser!!, it, {
                         Toast.makeText(applicationContext, "Saved score!", Toast.LENGTH_SHORT)
                             .show()
+                        val endIntent = Intent(this@GameActivity, EndActivity::class.java)
+                        endIntent.putExtra("score", score.toString())
+                        startActivity(endIntent)
+                        finish()
                     }, ::onError)
                 }
-
-                gameRunning = false
             }
 
             override fun onTick(millisecondsLeft: Long) {
@@ -191,14 +196,16 @@ class GameActivity : AppCompatActivity() {
     private fun onCardClick(cardView: View, cardData: CardData) {
         val newFlip = Pair(cardView, cardData)
 
-        if (!resolvedCards.contains(newFlip) && gameRunning) {
+        // If the card is clickable
+        if (!resolvedCards.contains(newFlip) && gameRunning && !flipStack.contains(newFlip)) {
+            // Animate and set tag
             flipCard(cardView)
             val prevFlip = flipStack.lastOrNull()
 
             prevFlip?.let {
+                // If the card is clicked after another
                 if(it.second.imageResource == cardData.imageResource){
-                    Log.d("GAME", "Correct")
-
+                    // If cards match
                     // Add new card to the beginning of the list
                     resolvedCards.add(it)
                     resolvedCards.add(newFlip)
@@ -208,7 +215,7 @@ class GameActivity : AppCompatActivity() {
                     score += cardData.point
                     scoreTxt.text = score.toString()
                 } else {
-                    Log.d("GAME", "Incorrect")
+                    // If cards don't match
 
                     Handler().postDelayed({
                         flipCard(it.first)
@@ -217,13 +224,14 @@ class GameActivity : AppCompatActivity() {
                     flipStack.remove(it)
                 }
             } ?: let {
+                // If the card is the first one to be flipped
                 flipStack.add(newFlip)
             }
 
+            // If level is completed
             if(resolvedCards.size == gameSize){
                 gameRunning = false
                 // If all the cards are opened
-                Log.d("GAME", "Next level")
 
                 // flip back the open cards and init a new game
                 val baseDelay = 400L
@@ -245,6 +253,11 @@ class GameActivity : AppCompatActivity() {
                 }, totalDelay)
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        timer.cancel()
     }
 
     private fun getCards(count: Int): List<CardData> {

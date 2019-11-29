@@ -20,6 +20,7 @@
         <activity android:name=".activity.ProfileActivity" />
         <activity android:name=".activity.ChangeAvatarActivity" />
         <activity android:name=".activity.GameActivity" />
+        <activity android:name=".activity.EndActivity" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

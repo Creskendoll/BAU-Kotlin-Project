@@ -9,8 +9,8 @@
     <androidx.recyclerview.widget.RecyclerView
         tools:listitem="@layout/player_row"
         android:id="@+id/leadersList"
+        android:background="#46990DB9"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"/>
+        android:layout_height="match_parent"/>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

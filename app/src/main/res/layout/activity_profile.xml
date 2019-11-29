@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="@color/blueBg"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,7 +14,7 @@
         android:background="@drawable/round_avatar"
         android:layout_gravity="center"
         tools:src="@mipmap/ic_first_avatar"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="16dp"/>
 
     <TextView
         tools:text="HIGHSCORE"
