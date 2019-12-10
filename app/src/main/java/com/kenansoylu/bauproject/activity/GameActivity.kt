@@ -91,7 +91,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun onError(e : Exception) {
-
+        Log.d("GAME", e.toString())
     }
 
     private fun startTimer(duration: Long) {

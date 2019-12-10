@@ -9,12 +9,16 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.kenansoylu.bauproject.R
+import com.kenansoylu.bauproject.adapter.ScoresAdapter
 import com.kenansoylu.bauproject.data.UserData
 import com.kenansoylu.bauproject.misc.DisplayImage
 import com.kenansoylu.bauproject.misc.SharedPreferenceManager
 import com.kenansoylu.bauproject.services.UserService
+import kotlinx.android.synthetic.main.activity_profile.*
+import java.util.Random
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -35,7 +39,7 @@ class ProfileActivity : AppCompatActivity() {
         userID = FirebaseAuth.getInstance().currentUser!!.uid
         playerID = intent.getStringExtra("player_id")
 
-        // Initially hide button
+        // Initially hide update button
         findViewById<Button>(R.id.updateBtn).visibility = View.GONE
 
         findViewById<ImageButton>(R.id.profileAvatar).setOnClickListener {
@@ -87,6 +91,15 @@ class ProfileActivity : AppCompatActivity() {
                 userData.scores
             )
             updateUser(userData, newUser)
+        }
+
+        // Update scores
+        val gridManager = LinearLayoutManager(this)
+        val scores = userData.scores
+
+        with(scoresList) {
+            layoutManager = gridManager
+            adapter = ScoresAdapter(scores)
         }
     }
 

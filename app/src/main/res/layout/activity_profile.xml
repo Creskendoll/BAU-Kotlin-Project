@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    tools:context=".activity.ProfileActivity"
     android:background="@color/blueBg"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -30,23 +31,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="NAME"
-        android:layout_marginTop="30dp"
         android:gravity="center"
         android:textColor="@color/blackText"
         android:id="@+id/nickNameTxt"
         android:textSize="30sp"
     />
 
+
     <Button
         android:id="@+id/updateBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:height="80dp"
+        android:height="60dp"
         android:background="@drawable/round_button_blue"
         android:text="Update"
         android:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/score_row"
+        android:id="@+id/scoresList"
+        android:background="#46990DB9"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
 
 </LinearLayout>

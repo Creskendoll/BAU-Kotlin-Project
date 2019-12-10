@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scoreRow"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@drawable/round_player_row"
+    android:layout_margin="8dp"
+    tools:context=".activity.ProfileActivity">
+
+
+    <TextView
+        android:id="@+id/indexTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="false"
+        android:gravity="center"
+        android:layout_marginStart="32dp"
+        android:textColor="@color/blackText"
+        android:textSize="20sp"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:layout_marginEnd="32dp"
+        android:textColor="@color/blackText"
+        android:textSize="20sp"
+        tools:text="100" />
+
+</RelativeLayout>
