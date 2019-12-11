@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kenansoylu.bauproject.R
 
 class ScoresAdapter(
-    private val scores: List<Long>
+    private val scores: List<Pair<Int, Long>>
 ) : RecyclerView.Adapter<ScoresAdapter.ScoreViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -27,15 +27,15 @@ class ScoresAdapter(
     override fun getItemCount() = scores.size
 
     override fun onBindViewHolder(holder: ScoreViewHolder, position: Int) {
-        holder.bind(position, scores[position])
+        holder.bind(scores[position])
     }
 
     class ScoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(index : Int, score: Long) {
+        fun bind(score: Pair<Int,Long>) {
             // Set index and score
-            itemView.findViewById<TextView>(R.id.scoreText).text = score.toString()
-            itemView.findViewById<TextView>(R.id.indexTxt).text = "Game: " + (1 + index).toString()
+            itemView.findViewById<TextView>(R.id.scoreText).text = score.second.toString()
+            itemView.findViewById<TextView>(R.id.indexTxt).text = "Game: " + score.first .toString()
         }
     }
 }

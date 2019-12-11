@@ -95,11 +95,15 @@ class ProfileActivity : AppCompatActivity() {
 
         // Update scores
         val gridManager = LinearLayoutManager(this)
-        val scores = userData.scores
+
+        // Sort games by score but keep their indexes
+        val gameAndScores = userData.scores.mapIndexed { index, l ->
+            Pair(index+1, l)
+        }.sortedBy { it.second }.reversed()
 
         with(scoresList) {
             layoutManager = gridManager
-            adapter = ScoresAdapter(scores)
+            adapter = ScoresAdapter(gameAndScores)
         }
     }
 

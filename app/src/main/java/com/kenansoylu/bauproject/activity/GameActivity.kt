@@ -15,7 +15,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.ContentLoadingProgressBar
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.GameBoardAdapter
