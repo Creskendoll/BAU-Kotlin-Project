@@ -16,16 +16,13 @@ The scores of the players are recorded and displayed on a leaderboard. Users can
 <head>
 <style>
 * {
-  box-sizing: border-box;
+box-sizing: border-box;
 }
-
 .column {
 float: left;
 width: 25%;
 padding: 5px;
 }
-
-/_ Clearfix (clear floats) _/
 .row::after {
 content: "";
 clear: both;
