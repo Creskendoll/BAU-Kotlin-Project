@@ -36,9 +36,6 @@ display: table;
 </head>
 <body>
 
-<h2>Images Side by Side</h2>
-<p>How to create side-by-side images with the CSS float property:</p>
-
 <div class="row">
   <div class="column">
     <img src="/Creskendoll/BAU-Kotlin-Project/blob/master/screenshots/1.png?raw=true" style="width:100%">
