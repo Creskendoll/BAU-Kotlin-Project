@@ -13,33 +13,33 @@ The scores of the players are recorded and displayed on a leaderboard. Users can
 ## Screenshots
 
 <div class="row" 
-style="content: '';
-    clear: both;
-    display: table;">
+    style="clear: both;
+            display: table;">
   <div class="column" 
   style="float: left;
-        width: 25%;
+        width: 20%;
         padding: 5px;">
-    <img src="https//github.com/Creskendoll/BAU-Kotlin-Project/blob/master/screenshots/1.png?raw=true" style="width:100%">
+    <img src="https://raw.githubusercontent.com/Creskendoll/BAU-Kotlin-Project/master/screenshots/1.png" style="width:100%">
   </div>
-  <div class="column"
+  <div class="column" 
   style="float: left;
-        width: 25%;
+        width: 20%;
         padding: 5px;">
-    <img src="https//github.com/Creskendoll/BAU-Kotlin-Project/blob/master/screenshots/2.png?raw=true" style="width:100%">
+    <img src="https://raw.githubusercontent.com/Creskendoll/BAU-Kotlin-Project/master/screenshots/2.png" style="width:100%">
   </div>
-  <div class="column"
+  <div class="column" 
   style="float: left;
-        width: 25%;
+        width: 20%;
         padding: 5px;">
-    <img src="https//github.com/Creskendoll/BAU-Kotlin-Project/blob/master/screenshots/3.png?raw=true" style="width:100%">
+    <img src="https://raw.githubusercontent.com/Creskendoll/BAU-Kotlin-Project/master/screenshots/3.png" style="width:100%">
   </div>
-  <div class="column"
+  <div class="column" 
   style="float: left;
-        width: 25%;
+        width: 20%;
         padding: 5px;">
-    <img src="https//github.com/Creskendoll/BAU-Kotlin-Project/blob/master/screenshots/4.png?raw=true" style="width:100%">
+    <img src="https://raw.githubusercontent.com/Creskendoll/BAU-Kotlin-Project/master/screenshots/4.png" style="width:100%">
   </div>
+
 </div>
 
 ## Credits
