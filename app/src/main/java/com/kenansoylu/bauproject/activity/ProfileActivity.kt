@@ -76,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
 
         val nameEditTxt = findViewById<EditText>(R.id.nickNameTxt)
 
-        val highScoreStr = userData.scores.max().toString()
+        val highScoreStr = userData.scores.sum().toString()
         findViewById<TextView>(R.id.highscoreTxt).text =
             "${getString(R.string.high_score)} : ${highScoreStr}"
         nameEditTxt.text = Editable.Factory.getInstance().newEditable(userData.name)

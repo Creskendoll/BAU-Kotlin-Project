@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.scoreTxt).text =
             "Latest Score : ${userData.scores.lastOrNull()}"
         findViewById<TextView>(R.id.highscoreTxt).text =
-            "${getString(R.string.high_score)} : ${userData.scores.max()}"
+            "${getString(R.string.high_score)} : ${userData.scores.sum()}"
         findViewById<Button>(R.id.signOutBtn).visibility = View.VISIBLE
         DisplayImage(findViewById(R.id.profileAvatar)).execute(userData.avatarURI)
     }

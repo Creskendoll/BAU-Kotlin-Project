@@ -35,7 +35,7 @@ class LeadersAdapter(
                 itemView.setBackgroundColor(Color.parseColor("#7403D8F4"))
 
             itemView.playerName.text = userData.name
-            itemView.playerScore.text = userData.scores.max().toString()
+            itemView.playerScore.text = userData.scores.sum().toString()
             DisplayImage(itemView.playerAvatar).execute(userData.avatarURI)
             itemView.setOnClickListener { clickListener(userData) }
         }

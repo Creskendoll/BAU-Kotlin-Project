@@ -48,7 +48,7 @@ class LeadersActivity : AppCompatActivity() {
     private fun populateList(users: List<UserData>) {
         // Sort users by their high score
         val sortedUsers = users.sortedBy { userData ->
-            userData.scores.max()
+            userData.scores.sum()
         }.reversed()
         spManager.getUser()?.let {
             leadersList.layoutManager = LinearLayoutManager(this)
