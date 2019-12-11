@@ -1,6 +1,7 @@
 # BAU-Kotlin-Project
 
 Term project for the COP4485 N11-Android Programming class of 2019.
+
 Author: Kenan Soylu | 1601204
 
 ## Features
