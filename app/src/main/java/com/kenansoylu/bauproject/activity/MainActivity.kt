@@ -56,7 +56,8 @@ class MainActivity : AppCompatActivity() {
                 val profileIntent = Intent(this@MainActivity, ProfileActivity::class.java)
                 profileIntent.putExtra("player_id", this.auth.currentUser!!.uid)
                 startActivity(profileIntent)
-            }
+            } else
+                signIn()
         }
         initUser(this.auth.currentUser)
     }
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
+        // Sign in with email
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build()
         )
@@ -142,41 +144,47 @@ class MainActivity : AppCompatActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                // Might have to get a new instance
-//                val user = FirebaseAuth.getInstance().currentUser
-                val user = this.auth.currentUser
-                val defaultPic =
-                    "https://pbs.twimg.com/profile_images/1002933519629389824/rMED8za4_400x400.jpg"
-                val defaultName = "Guest"
-                // Create default user with default values
-                val userData = UserData(
-                    user?.uid ?: "-1",
-                    user?.displayName ?: defaultName,
-                    defaultPic,
-                    mutableListOf(0) // Scores are 0
-                )
+                FirebaseAuth.getInstance().currentUser?.let {
+                    // Will not run if response is null
+                    if (response?.isNewUser == true) {
+                        // NEW USER
+                        val defaultPic =
+                            "https://pbs.twimg.com/profile_images/1002933519629389824/rMED8za4_400x400.jpg"
+                        val defaultName = "Guest"
+                        // Create default user with default values
+                        val userData = UserData(
+                            it.uid,
+                            it.displayName ?: defaultName,
+                            defaultPic,
+                            mutableListOf(0) // Scores are 0
+                        )
 
-                // Will not run if response is null
-                if (response?.isNewUser == true) {
-                    userService.addUser(userData, { onNewUser(userData) }, ::onError)
-                    Toast.makeText(
-                        applicationContext,
-                        "Successfully created user.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        applicationContext,
-                        "Successfully signed in.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        val that = it
+                        userService.addUser(userData, { run {
+                            onNewUser(userData)
+                            initUser(that)
+                         } }, ::onError)
+                        Toast.makeText(
+                            applicationContext,
+                            "Successfully created user.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        // EXISTING USER
+                        val that = it
+                        // Save user to shared preferences and initialize user
+                        userService.getUser(it, { userData -> run {
+                            spManager.saveUser(userData)
+                            initUser(that)
+                        } }, ::onError)
+
+                        Toast.makeText(
+                            applicationContext,
+                            "Successfully signed in.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
-
-                // Save user to shared preferences
-                spManager.saveUser(userData)
-
-                // Set UI fields
-                initUser(user)
             } else {
                 // Sign in failed
                 Toast.makeText(applicationContext, "Sign in cancelled!", Toast.LENGTH_SHORT).show()

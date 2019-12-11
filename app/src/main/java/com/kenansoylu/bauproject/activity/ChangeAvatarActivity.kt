@@ -1,27 +1,29 @@
 package com.kenansoylu.bauproject.activity
 
+import android.app.Activity
+import android.app.ProgressDialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TableLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.services.ResourceService
-import android.content.Intent
-import android.app.Activity
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.util.Log
-import android.provider.OpenableColumns
-import android.net.Uri
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TableLayout
 import java.io.ByteArrayOutputStream
 
 
 class ChangeAvatarActivity : AppCompatActivity() {
 
     private lateinit var resourceService: ResourceService
+    private lateinit var loadingDialog: ProgressDialog
 
     private val GALLERY_REQUEST_CODE = 1
 
@@ -48,12 +50,20 @@ class ChangeAvatarActivity : AppCompatActivity() {
         getViewsByTag(root, "default_avatar").forEach {
             val imgView = it as ImageView
             it.setOnClickListener {
+                //  Convert bitmap to byte array
                 val bitmapDrawable = imgView.drawable as BitmapDrawable
                 val bitmap = bitmapDrawable.bitmap
                 val stream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 val byteArray = stream.toByteArray()
+                // File location
                 val savePath = "avatars/${byteArray.hashCode()}"
+
+                loadingDialog = ProgressDialog.show(
+                    this@ChangeAvatarActivity, "",
+                    "Uploading image...", true
+                )
+
                 resourceService.writeData(savePath, byteArray, ::onPickAvatar, ::onError)
             }
         }
@@ -77,8 +87,9 @@ class ChangeAvatarActivity : AppCompatActivity() {
     }
 
     private fun onPickAvatar(url: String) {
-        Log.d("AVATAR_URL", url)
+//        Log.d("AVATAR_URL", url)
 
+        loadingDialog.dismiss()
         val profileIntent = Intent(this@ChangeAvatarActivity, ProfileActivity::class.java)
         profileIntent.putExtra("avatar_url", url)
         setResult(RESULT_OK, profileIntent)
@@ -129,6 +140,10 @@ class ChangeAvatarActivity : AppCompatActivity() {
                         val savePath = "avatars/${fileName}"
                         val byteArray = inputStream?.readBytes()!!
 
+                        loadingDialog = ProgressDialog.show(
+                            this@ChangeAvatarActivity, "",
+                            "Uploading image...", true
+                        )
                         resourceService.writeData(savePath, byteArray, ::onPickAvatar, ::onError)
                     }
                 }

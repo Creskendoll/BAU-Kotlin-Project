@@ -31,6 +31,7 @@
         app:layout_constraintStart_toStartOf="@+id/playerBg"
         app:layout_constraintTop_toTopOf="@+id/playerBg"
         tools:src="@mipmap/ic_first_avatar"
+        android:src="@mipmap/ic_first_avatar"
         tools:srcCompat="@mipmap/ic_first_avatar" />
 
     <Button

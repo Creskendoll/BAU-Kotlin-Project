@@ -2,6 +2,7 @@ package com.kenansoylu.bauproject.activity
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -14,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.recyclerview.widget.GridLayoutManager
 import com.kenansoylu.bauproject.R
 import com.kenansoylu.bauproject.adapter.GameBoardAdapter
@@ -102,14 +104,20 @@ class GameActivity : AppCompatActivity() {
                 val spManager = SharedPreferenceManager(applicationContext)
                 val userService = UserService(applicationContext)
                 val oldUser = spManager.getUser()
+                val loading = ProgressDialog.show(
+                    this@GameActivity, "",
+                    "Saving Score...", true
+                )
+
                 spManager.getUser()?.let {
                     it.scores.add(score)
                     spManager.saveUser(it)
                     userService.updateUser(oldUser!!, it, {
-                        Toast.makeText(applicationContext, "Saved score!", Toast.LENGTH_SHORT)
-                            .show()
                         val endIntent = Intent(this@GameActivity, EndActivity::class.java)
                         endIntent.putExtra("score", score.toString())
+                        loading.dismiss()
+                        Toast.makeText(applicationContext, "Saved score!", Toast.LENGTH_SHORT)
+                            .show()
                         startActivity(endIntent)
                         finish()
                     }, ::onError)
